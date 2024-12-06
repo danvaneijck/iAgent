@@ -121,7 +121,7 @@ class InjectiveExchange(InjectiveBase):
             )
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def get_mid_price_and_tob_spot_market(self, market_id: str) -> Dict:
         try:
@@ -132,7 +132,7 @@ class InjectiveExchange(InjectiveBase):
             )
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def get_derivatives_orderbook(
         self, market_id: str, limit: int = None
@@ -174,7 +174,7 @@ class InjectiveExchange(InjectiveBase):
             )
             return {"success": True, "result": orders}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def trader_spot_orders(self, market_id: str, subaccount_idx: int):
         try:
@@ -187,7 +187,7 @@ class InjectiveExchange(InjectiveBase):
             )
             return {"success": True, "result": orders}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def trader_derivative_orders_by_hash(
         self, market_id: str, subaccount_idx: int, order_hashes: List[str]
@@ -205,7 +205,7 @@ class InjectiveExchange(InjectiveBase):
             )
             return {"success": True, "result": orders}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def trader_spot_orders_by_hash(
         self, market_id: str, subaccount_idx: int, order_hashes: List[str]
@@ -221,7 +221,7 @@ class InjectiveExchange(InjectiveBase):
             )
             return {"success": True, "result": orders}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def get_subaccount_positions_in_markets(self, market_ids: List[str]) -> Dict:
         try:
@@ -242,7 +242,7 @@ class InjectiveExchange(InjectiveBase):
                 return {"success": True, "result": position_map}
             return {"success": True, "result": position_map}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def launch_instant_spot_market(
         self,
@@ -267,7 +267,7 @@ class InjectiveExchange(InjectiveBase):
             res = await self.chain_client.message_broadcaster.broadcast([msg])
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def launch_instant_perp_market(
         self,
@@ -307,7 +307,7 @@ class InjectiveExchange(InjectiveBase):
             res = await self.chain_client.message_broadcaster.broadcast([msg])
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def opt_out_trade_earn_rewards(self) -> Dict:
 

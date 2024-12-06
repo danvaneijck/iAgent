@@ -27,7 +27,7 @@ class InjectiveTokenFactory(InjectiveBase):
             res = await self.chain_client.message_broadcaster.broadcast([msg])
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def mint(self, denom: str, amount: int) -> Dict:
         try:
@@ -42,7 +42,7 @@ class InjectiveTokenFactory(InjectiveBase):
             res = await self.chain_client.message_broadcaster.broadcast([msg])
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def burn(self, denom: str, amount: int) -> Dict:
         try:
@@ -57,7 +57,7 @@ class InjectiveTokenFactory(InjectiveBase):
             res = await self.chain_client.message_broadcaster.broadcast([msg])
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def set_denom_metadata(
         self,
@@ -89,7 +89,7 @@ class InjectiveTokenFactory(InjectiveBase):
             res = await self.chain_client.build_and_broadcast_tx(msg)
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def change_admin(self, denom: str, address: str) -> Dict:
         try:
@@ -105,7 +105,7 @@ class InjectiveTokenFactory(InjectiveBase):
             res = await self.chain_client.build_and_broadcast_tx(msg)
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def burn_admin(self, denom: str) -> Dict:
         try:
@@ -121,4 +121,4 @@ class InjectiveTokenFactory(InjectiveBase):
             res = await self.chain_client.build_and_broadcast_tx(msg)
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}

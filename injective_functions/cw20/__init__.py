@@ -45,7 +45,7 @@ class CW20Factory(InjectiveBase):
             res = await self.chain_client.message_broadcaster.broadcast([msg])
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def get_cw20_token_info(self, token_address: str) -> Dict:
         """
@@ -68,7 +68,7 @@ class CW20Factory(InjectiveBase):
 
             return {"success": True, "result": token_info}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def get_cw20_token_balance(self, token_address: str) -> Dict:
         """
@@ -123,4 +123,4 @@ class CW20Factory(InjectiveBase):
                 },
             }
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}

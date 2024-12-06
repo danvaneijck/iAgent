@@ -40,7 +40,7 @@ class InjectiveAuction(InjectiveBase):
                 return {"success": False, "error": "failed to fetch auction data"}
 
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def fetch_auction_bids(self, bid_round: int) -> Dict:
         try:

@@ -51,7 +51,7 @@ class DojoAMMFactory(InjectiveBase):
             )
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def dojo_create_liquidity_pool(
         self,
@@ -112,7 +112,7 @@ class DojoAMMFactory(InjectiveBase):
             res = await self.chain_client.message_broadcaster.broadcast([msg])
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def provide_liquidity_on_dojo(
         self,
@@ -190,7 +190,7 @@ class DojoAMMFactory(InjectiveBase):
             res = await self.chain_client.message_broadcaster.broadcast([msg])
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def get_dojo_pair_info(self, pair: str) -> Dict:
         try:
@@ -204,7 +204,7 @@ class DojoAMMFactory(InjectiveBase):
 
             return {"success": True, "result": pair_info}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
 
     async def dojo_trade_assets_from_pair(
         self,
@@ -325,4 +325,4 @@ class DojoAMMFactory(InjectiveBase):
 
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "result": detailed_exception_info(e)}
+            return {"success": False, "error": detailed_exception_info(e)}
