@@ -1,7 +1,7 @@
 import uuid
 from decimal import Decimal
 from injective_functions.base import InjectiveBase
-from injective_functions.utils.helpers import impute_market_id, base64convert
+from injective_functions.utils.helpers import impute_market_id
 
 # TODO: serve endpoints of trader functions via an api
 # to isolate functions as much as possible
@@ -20,9 +20,9 @@ class InjectiveTrading(InjectiveBase):
         side: str,
         market_id: str,
         subaccount_idx: int,
-        leverage: str,
     ):
         """Place a limit order"""
+        await self.chain_client.init_client()
         market_id = await impute_market_id(market_id)
         self.subaccount_id = self.chain_client.address.get_subaccount_id(
             index=subaccount_idx
@@ -37,7 +37,7 @@ class InjectiveTrading(InjectiveBase):
             margin=self.chain_client.composer.calculate_margin(
                 quantity=Decimal(str(quantity)),
                 price=Decimal(str(price)),
-                leverage=Decimal(leverage),
+                leverage=Decimal(1),
                 is_reduce_only=False,
             ),
             order_type=side,
@@ -47,14 +47,10 @@ class InjectiveTrading(InjectiveBase):
         return await self.chain_client.build_and_broadcast_tx(msg)
 
     async def place_derivative_market_order(
-        self,
-        quantity: float,
-        side: str,
-        market_id: str,
-        subaccount_idx: int,
-        leverage: str,
+        self, quantity: float, side: str, market_id: str, subaccount_idx: int
     ):
         """Place a market order"""
+        await self.chain_client.init_client()
 
         market_id = await impute_market_id(market_id)
         self.subaccount_id = self.chain_client.address.get_subaccount_id(subaccount_idx)
@@ -76,7 +72,7 @@ class InjectiveTrading(InjectiveBase):
             margin=self.chain_client.composer.calculate_margin(
                 quantity=Decimal(str(quantity)),
                 price=Decimal(estimated_price),
-                leverage=Decimal(leverage),
+                leverage=Decimal(1),
                 is_reduce_only=False,
             ),
             order_type=side,
@@ -88,14 +84,14 @@ class InjectiveTrading(InjectiveBase):
     async def cancel_derivative_limit_order(
         self, market_id: str, subaccount_idx: int, order_hash: str
     ):
+        await self.chain_client.init_client()
         market_id = await impute_market_id(market_id)
-        converted_order_hash = base64convert(order_hash)
         subaccount_id = self.chain_client.address.get_subaccount_id(subaccount_idx)
         msg = self.chain_client.composer.msg_cancel_derivative_order(
             sender=self.chain_client.address.to_acc_bech32(),
             market_id=market_id,
             subaccount_id=subaccount_id,
-            order_hash=converted_order_hash,
+            order_hash=order_hash,
         )
         return await self.chain_client.build_and_broadcast_tx(msg)
 
@@ -108,6 +104,7 @@ class InjectiveTrading(InjectiveBase):
         subaccount_idx: int,
     ):
         """Place a limit order"""
+        await self.chain_client.init_client()
 
         market_id = await impute_market_id(market_id)
         self.subaccount_id = self.chain_client.address.get_subaccount_id(
@@ -130,6 +127,7 @@ class InjectiveTrading(InjectiveBase):
         self, quantity: float, side: str, market_id: str, subaccount_idx: int
     ):
         """Place a market order"""
+        await self.chain_client.init_client()
 
         market_id = await impute_market_id(market_id)
         self.subaccount_id = self.chain_client.address.get_subaccount_id(subaccount_idx)
@@ -157,13 +155,14 @@ class InjectiveTrading(InjectiveBase):
     async def cancel_spot_limit_order(
         self, market_id: str, subaccount_idx: int, order_hash: str
     ):
-        converted_order_hash = base64convert(order_hash)
+        await self.chain_client.init_client()
+
         market_id = await impute_market_id(market_id)
         subaccount_id = self.chain_client.address.get_subaccount_id(subaccount_idx)
         msg = self.chain_client.composer.msg_cancel_spot_order(
             sender=self.chain_client.address.to_acc_bech32(),
             market_id=market_id,
             subaccount_id=subaccount_id,
-            order_hash=converted_order_hash,
+            order_hash=order_hash,
         )
         return await self.chain_client.build_and_broadcast_tx(msg)

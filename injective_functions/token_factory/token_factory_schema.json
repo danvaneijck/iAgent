@@ -23,7 +23,12 @@
                         "description": "Number of decimal places for the token"
                     }
                 },
-                "required": ["subdenom", "name", "symbol", "decimals"]
+                "required": [
+                    "subdenom",
+                    "name",
+                    "symbol",
+                    "decimals"
+                ]
             }
         },
         {
@@ -41,7 +46,10 @@
                         "description": "Amount of tokens to mint"
                     }
                 },
-                "required": ["denom", "amount"]
+                "required": [
+                    "denom",
+                    "amount"
+                ]
             }
         },
         {
@@ -59,7 +67,10 @@
                         "description": "Amount of tokens to burn"
                     }
                 },
-                "required": ["denom", "amount"]
+                "required": [
+                    "denom",
+                    "amount"
+                ]
             }
         },
         {
@@ -105,7 +116,54 @@
                         "description": "Hash of the URI content"
                     }
                 },
-                "required": ["sender", "description", "denom", "subdenom", "token_decimals", "name", "symbol", "uri", "uri_hash"]
+                "required": [
+                    "sender",
+                    "description",
+                    "denom",
+                    "subdenom",
+                    "token_decimals",
+                    "name",
+                    "symbol",
+                    "uri",
+                    "uri_hash"
+                ]
+            }
+        },
+        {
+            "name": "change_admin",
+            "description": "Transfer the ownership of a token denomination to a new address",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "denom": {
+                        "type": "string",
+                        "description": "Token denomination whose ownership is being transferred"
+                    },
+                    "address": {
+                        "type": "string",
+                        "description": "New owner's address in Bech32 format"
+                    }
+                },
+                "required": [
+                    "denom",
+                    "address"
+                ]
+            }
+        },
+        {
+            "name": "burn_admin",
+            "description": "Transfer the ownership of a token denomination to the burn address",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "denom": {
+                        "type": "string",
+                        "description": "Token denomination whose ownership is being transferred"
+                    }
+                },
+                "required": [
+                    "denom"
+                ]
             }
         }
     ]

@@ -8,6 +8,8 @@ from injective_functions.exchange.exchange import InjectiveExchange
 from injective_functions.exchange.trader import InjectiveTrading
 from injective_functions.staking import InjectiveStaking
 from injective_functions.token_factory import InjectiveTokenFactory
+from injective_functions.cw20 import CW20Factory
+from injective_functions.dojo_amm import DojoAMMFactory
 
 
 class InjectiveClientFactory:
@@ -41,6 +43,8 @@ class InjectiveClientFactory:
             "trader": InjectiveTrading(chain_client),
             "staking": InjectiveStaking(chain_client),
             "token_factory": InjectiveTokenFactory(chain_client),
+            "cw20": CW20Factory(chain_client),
+            "dojo_amm": DojoAMMFactory(chain_client),
         }
         print(clients)
         return clients

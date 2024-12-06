@@ -43,6 +43,8 @@ class InjectiveChatAgent:
             "./injective_functions/auction/auction_schema.json",
             "./injective_functions/authz/authz_schema.json",
             "./injective_functions/bank/bank_schema.json",
+            "./injective_functions/cw20/cw20_schema.json",
+            "./injective_functions/dojo_amm/dojo_amm_schema.json",
             "./injective_functions/exchange/exchange_schema.json",
             "./injective_functions/staking/staking_schema.json",
             "./injective_functions/token_factory/token_factory_schema.json",
@@ -138,7 +140,7 @@ class InjectiveChatAgent:
                     When users want to perform actions, describe the action and ask for confirmation but for fetching data you dont have to ask for confirmation.""",
                     }
                 ]
-                + self.conversations[session_id],
+                + self.conversations[session_id][-3:],
                 functions=self.function_schemas,
                 function_call="auto",
                 max_tokens=2000,

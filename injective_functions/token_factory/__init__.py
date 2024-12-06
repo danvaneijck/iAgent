@@ -27,7 +27,7 @@ class InjectiveTokenFactory(InjectiveBase):
             res = await self.chain_client.message_broadcaster.broadcast([msg])
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "error": detailed_exception_info(e)}
+            return {"success": False, "result": detailed_exception_info(e)}
 
     async def mint(self, denom: str, amount: int) -> Dict:
         try:
@@ -42,7 +42,7 @@ class InjectiveTokenFactory(InjectiveBase):
             res = await self.chain_client.message_broadcaster.broadcast([msg])
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "error": detailed_exception_info(e)}
+            return {"success": False, "result": detailed_exception_info(e)}
 
     async def burn(self, denom: str, amount: int) -> Dict:
         try:
@@ -57,7 +57,7 @@ class InjectiveTokenFactory(InjectiveBase):
             res = await self.chain_client.message_broadcaster.broadcast([msg])
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "error": detailed_exception_info(e)}
+            return {"success": False, "result": detailed_exception_info(e)}
 
     async def set_denom_metadata(
         self,
@@ -72,7 +72,7 @@ class InjectiveTokenFactory(InjectiveBase):
         uri_hash: str,
     ) -> Dict:
         try:
-
+            await self.chain_client.init_client()
             msg = self.chain_client.composer.msg_set_denom_metadata(
                 sender=sender,
                 description=description,
@@ -86,7 +86,39 @@ class InjectiveTokenFactory(InjectiveBase):
             )
 
             # broadcast the transaction
-            res = await self.chain_client.message_broadcaster.broadcast([msg])
+            res = await self.chain_client.build_and_broadcast_tx(msg)
             return {"success": True, "result": res}
         except Exception as e:
-            return {"success": False, "error": detailed_exception_info(e)}
+            return {"success": False, "result": detailed_exception_info(e)}
+
+    async def change_admin(self, denom: str, address: str) -> Dict:
+        try:
+            await self.chain_client.init_client()
+
+            msg = self.chain_client.composer.msg_change_admin(
+                sender=self.chain_client.address.to_acc_bech32(),
+                denom=denom,
+                new_admin=address,
+            )
+
+            # broadcast the transaction
+            res = await self.chain_client.build_and_broadcast_tx(msg)
+            return {"success": True, "result": res}
+        except Exception as e:
+            return {"success": False, "result": detailed_exception_info(e)}
+
+    async def burn_admin(self, denom: str) -> Dict:
+        try:
+            await self.chain_client.init_client()
+
+            msg = self.chain_client.composer.msg_change_admin(
+                sender=self.chain_client.address.to_acc_bech32(),
+                denom=denom,
+                new_admin="inj1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqe2hm49",
+            )
+
+            # broadcast the transaction
+            res = await self.chain_client.build_and_broadcast_tx(msg)
+            return {"success": True, "result": res}
+        except Exception as e:
+            return {"success": False, "result": detailed_exception_info(e)}

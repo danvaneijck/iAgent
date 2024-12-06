@@ -1,0 +1,144 @@
+{
+    "functions": [
+        {
+            "name": "dojo_whitelist_native_token",
+            "description": "Whitelist a native token by adding its denomination and decimals to the factory.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "denom": {
+                        "type": "string",
+                        "description": "The denomination of the native token to whitelist (e.g., 'inj')."
+                    },
+                    "decimals": {
+                        "type": "integer",
+                        "description": "The number of decimals for the token (e.g., 18)."
+                    }
+                },
+                "required": [
+                    "denom",
+                    "decimals"
+                ]
+            }
+        },
+        {
+            "name": "dojo_create_liquidity_pool",
+            "description": "Create a liquidity pool for two tokens. Supports native and CW20 tokens.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "denom1": {
+                        "type": "string",
+                        "description": "The denomination or contract address of the first token."
+                    },
+                    "denom2": {
+                        "type": "string",
+                        "description": "The denomination or contract address of the second token."
+                    },
+                    "is_cw20_asset1": {
+                        "type": "boolean",
+                        "description": "Whether the first token is a CW20 token. Defaults to false."
+                    },
+                    "is_cw20_asset2": {
+                        "type": "boolean",
+                        "description": "Whether the second token is a CW20 token. Defaults to false."
+                    }
+                },
+                "required": [
+                    "denom1",
+                    "denom2"
+                ]
+            }
+        },
+        {
+            "name": "provide_liquidity_on_dojo",
+            "description": "Provide liquidity to an existing pair, supporting both CW20 and native tokens.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pair_address": {
+                        "type": "string",
+                        "description": "The address of the liquidity pair contract."
+                    },
+                    "token1_denom": {
+                        "type": "string",
+                        "description": "The denomination or contract address of the first token."
+                    },
+                    "token1_amount": {
+                        "type": "string",
+                        "description": "The amount of the first token to provide."
+                    },
+                    "token2_denom": {
+                        "type": "string",
+                        "description": "The denomination or contract address of the second token."
+                    },
+                    "token2_amount": {
+                        "type": "string",
+                        "description": "The amount of the second token to provide."
+                    },
+                    "is_token1_cw20": {
+                        "type": "boolean",
+                        "description": "Whether the first token is a CW20 token. Defaults to false."
+                    },
+                    "is_token2_cw20": {
+                        "type": "boolean",
+                        "description": "Whether the second token is a CW20 token. Defaults to false."
+                    }
+                },
+                "required": [
+                    "pair_address",
+                    "token1_denom",
+                    "token1_amount",
+                    "token2_denom",
+                    "token2_amount"
+                ]
+            }
+        },
+        {
+            "name": "get_dojo_pair_info",
+            "description": "Fetch information about a specific DojoSwap token pair.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pair": {
+                        "type": "string",
+                        "description": "The address of the DojoSwap pair contract."
+                    }
+                },
+                "required": [
+                    "pair"
+                ]
+            }
+        },
+        {
+            "name": "dojo_trade_assets_from_pair",
+            "description": "Buy an asset from a DojoSwap liquidity pair. Supports both native and CW20 tokens.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "pair_address": {
+                        "type": "string",
+                        "description": "The address of the liquidity pair contract."
+                    },
+                    "offer_asset_address": {
+                        "type": "string",
+                        "description": "The address of the asset being offered (denomination for native tokens or contract address for CW20)."
+                    },
+                    "amount": {
+                        "type": "number",
+                        "description": "The amount of the asset to swap in whole units."
+                    },
+                    "max_spread": {
+                        "type": "number",
+                        "description": "Maximum allowable price slippage, expressed as a percentage (default is 2%)."
+                    }
+                },
+                "required": [
+                    "pair_address",
+                    "offer_asset_address",
+                    "amount"
+                ]
+            }
+        }
+    ]
+}

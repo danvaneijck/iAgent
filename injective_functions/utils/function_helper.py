@@ -43,13 +43,12 @@ class InjectiveFunctionMapper:
         "transfer_funds": ("bank", "transfer_funds"),
         "query_spendable_balances": ("bank", "query_spendable_balances"),
         "query_total_supply": ("bank", "query_total_supply"),
+        "send_airdrop": ("bank", "send_airdrop"),
+        "query_balance_of_denom": ("bank", "query_balance_of_denom"),
         # Staking functions
         "stake_tokens": ("staking", "stake_tokens"),
         # Auction functions
         "send_bid_auction": ("auction", "send_bid_auction"),
-        "fetch_auctions": ("auction", "fetch_auctions"),
-        "fetch_latest_auction": ("auction", "fetch_latest_auction"),
-        "fetch_auction_bids": ("auction", "fetch_auction_bids"),
         # Authz functions
         "grant_address_auth": ("authz", "grant_address_auth"),
         "revoke_address_auth": ("authz", "revoke_address_auth"),
@@ -59,6 +58,18 @@ class InjectiveFunctionMapper:
         "mint": ("token_factory", "mint"),
         "burn": ("token_factory", "burn"),
         "set_denom_metadata": ("token_factory", "set_denom_metadata"),
+        "change_admin": ("token_factory", "change_admin"),
+        "burn_admin": ("token_factory", "burn_admin"),
+        # cw20 functions
+        "get_cw20_token_info": ("cw20", "get_cw20_token_info"),
+        "get_cw20_token_balance": ("cw20", "get_cw20_token_balance"),
+        "increase_cw20_allowance": ("cw20", "increase_cw20_allowance"),
+        # dojo functions
+        "get_dojo_pair_info": ("dojo_amm", "get_dojo_pair_info"),
+        "dojo_whitelist_native_token": ("dojo_amm", "dojo_whitelist_native_token"),
+        "dojo_create_liquidity_pool": ("dojo_amm", "dojo_create_liquidity_pool"),
+        "dojo_trade_assets_from_pair": ("dojo_amm", "dojo_trade_assets_from_pair"),
+        "provide_liquidity_on_dojo": ("dojo_amm", "provide_liquidity_on_dojo"),
     }
 
     @classmethod

@@ -1,0 +1,62 @@
+{
+    "functions": [
+        {
+            "name": "increase_cw20_allowance",
+            "description": "Increase the allowance of a CW20 token for a specified contract.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "token_address": {
+                        "type": "string",
+                        "description": "The address of the CW20 token contract."
+                    },
+                    "spender_address": {
+                        "type": "string",
+                        "description": "The address of the contract that will be allowed to spend the token."
+                    },
+                    "amount": {
+                        "type": "string",
+                        "description": "The amount by which to increase the allowance, specified as a string to handle large values."
+                    }
+                },
+                "required": [
+                    "token_address",
+                    "spender_address",
+                    "amount"
+                ]
+            }
+        },
+        {
+            "name": "get_cw20_token_info",
+            "description": "Fetch information about a CW20 token, including its name, symbol, decimals, and total supply.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "token_address": {
+                        "type": "string",
+                        "description": "The address of the CW20 token contract."
+                    }
+                },
+                "required": [
+                    "token_address"
+                ]
+            }
+        },
+        {
+            "name": "get_cw20_token_balance",
+            "description": "Fetch the balance of a CW20 token for the current wallet address.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "token_address": {
+                        "type": "string",
+                        "description": "The address of the CW20 token contract."
+                    }
+                },
+                "required": [
+                    "token_address"
+                ]
+            }
+        }
+    ]
+}
