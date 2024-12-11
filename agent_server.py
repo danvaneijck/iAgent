@@ -109,7 +109,7 @@ class InjectiveChatAgent:
             # Get response from OpenAI
             response = await asyncio.to_thread(
                 self.client.chat.completions.create,
-                model="gpt-4o",
+                model="gpt-4o-mini",
                 messages=[
                     {
                         "role": "system",
@@ -161,7 +161,7 @@ class InjectiveChatAgent:
                 # Get final response
                 second_response = await asyncio.to_thread(
                     self.client.chat.completions.create,
-                    model="gpt-4-turbo-preview",
+                    model="gpt-4o-mini",
                     messages=self.conversations[session_id],
                     max_tokens=2000,
                     temperature=0.7,
