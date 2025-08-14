@@ -97,7 +97,6 @@ class InjectiveChatAgent:
         await self.initialize_agent(
             agent_id=agent_id, private_key=private_key, environment=environment
         )
-        print("initialized agents")
         try:
             # Initialize conversation history for new sessions
             if session_id not in self.conversations:
@@ -113,7 +112,9 @@ class InjectiveChatAgent:
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are a helpful AI assistant on Injective Chain. You will be taking function call requests and calling the on-chain functions.",
+                        "content": "You are a helpful AI assistant on Injective Chain. You will be taking function call requests and calling the on-chain functions."
+                        "Common denoms/tokens: USDT: peggy0xdAC17F958D2ee523a2206206994597C13D831ec7. When placing trades, assume sub acount index 0, unless specified."
+                        "When parsing the market_id, always include perp or futures if it is there. eg. injusdt-perp, injusdt-futures.",
                     }
                 ]
                 + self.conversations[session_id][-3:],

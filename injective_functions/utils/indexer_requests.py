@@ -140,10 +140,15 @@ async def get_market_id(ticker_symbol: str, network_type: str = "mainnet"):
     """
     # Normalize the ticker symbol to match the API format
     normalized_ticker = normalize_ticker(ticker_symbol)
+    print(f"Fetching market ID for ticker: {normalized_ticker} on {network_type}")
+
+    is_spot = "PERP" not in normalized_ticker
     request_url = ""
     # API endpoint for derivative markets
     if network_type == "mainnet":
         request_url = "https://sentry.lcd.injective.network/injective/exchange/v1beta1/derivative/markets"
+        if is_spot:
+            request_url = "https://sentry.lcd.injective.network/injective/exchange/v1beta1/spot/markets"
     else:
         request_url = "https://testnet.sentry.lcd.injective.network/injective/exchange/v1beta1/derivative/markets"
     async with aiohttp.ClientSession() as session:
@@ -156,8 +161,10 @@ async def get_market_id(ticker_symbol: str, network_type: str = "mainnet"):
 
                 # Check if 'markets' key exists in the response
                 if "markets" in data:
-                    for market_info in data["markets"]:
-                        market = market_info.get("market", {})
+                    for market in data["markets"]:
+                        if not is_spot:
+                            market = market.get("market", {})
+
                         ticker = market.get("ticker", "").upper()
                         market_id = market.get("market_id")
 

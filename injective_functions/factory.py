@@ -46,5 +46,4 @@ class InjectiveClientFactory:
             "cw20": CW20Factory(chain_client),
             "dojo_amm": DojoAMMFactory(chain_client),
         }
-        print(clients)
         return clients

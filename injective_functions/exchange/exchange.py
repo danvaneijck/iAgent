@@ -96,10 +96,17 @@ class InjectiveExchange(InjectiveBase):
             market_id = await impute_market_id(market_id)
 
             subaccount_id = self.chain_client.address.get_subaccount_id(subaccount_idx)
-            orders = await self.chain_client.client.fetch_chain_subaccount_orders(
-                subaccount_id=subaccount_id,
-                market_id=market_id,
+
+            print(
+                f"Fetching orders for subaccount {subaccount_id} in market {market_id}"
             )
+            orders = (
+                await self.chain_client.client.fetch_chain_account_address_spot_orders(
+                    account_address=self.chain_client.address.to_acc_bech32(),
+                    market_id=market_id,
+                )
+            )
+            print(f"Orders fetched: {orders}")
             return {"success": True, "result": orders}
         except Exception as e:
             return {"success": False, "error": detailed_exception_info(e)}

@@ -93,6 +93,7 @@ class InjectiveBank(InjectiveBase):
                 address=self.chain_client.address.to_acc_bech32()
             )
             bank_balances = bank_balances["balances"]
+            print(f"bank_balances: {bank_balances}")
             # hash the bank balances as a kv pair
             human_readable_balances = {
                 token["denom"]: str(
@@ -101,12 +102,12 @@ class InjectiveBank(InjectiveBase):
                 for token in bank_balances
                 if token["denom"] in denoms
             }
+            print(f"human_readable_balances: {human_readable_balances}")
 
             # check if denom is an arg fron the openai func calling
             filtered_balances = dict()
             if denom_list != None:
-                # filter the balances
-                # TODO: replace with lambda func
+
                 for denom in denom_list:
                     if denom in human_readable_balances:
                         filtered_balances[denom] = human_readable_balances[denom]
