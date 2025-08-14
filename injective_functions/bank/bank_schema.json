@@ -117,7 +117,7 @@
         },
         {
             "name": "query_balance_of_denom",
-            "description": "Query the balance of a specific token denomination for the current address.",
+            "description": "Query the balance of a native bank token denomination (e.g., 'INJ', or any 'factory/' denom). Use this for native tokens, not CW20 tokens.",
             "parameters": {
                 "type": "object",
                 "properties": {

@@ -44,7 +44,7 @@
         },
         {
             "name": "get_cw20_token_balance",
-            "description": "Fetch the balance of a CW20 token for the current wallet address.",
+            "description": "Query the balance of a CW20 token (e.g., smart contract token, not native bank denom).",
             "parameters": {
                 "type": "object",
                 "properties": {

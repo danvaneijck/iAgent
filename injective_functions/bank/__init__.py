@@ -8,6 +8,7 @@ from pyinjective.proto.cosmos.bank.v1beta1 import (
     tx_pb2 as cosmos_bank_tx_pb,
 )
 from pyinjective.proto.cosmos.base.v1beta1 import coin_pb2 as base_coin_pb
+from decimal import Decimal
 
 
 class InjectiveBank(InjectiveBase):
@@ -28,39 +29,57 @@ class InjectiveBank(InjectiveBase):
         )
         return await self.chain_client.build_and_broadcast_tx(msg)
 
-    async def query_balances(self, denom_list: List[str] = None) -> Dict:
+    async def query_balances(self, denom_list: List[str] | None = None) -> Dict:
+        """
+        Return bank balances for the wallet.  If denom_list is supplied it may
+        contain raw denoms *or* token symbols (any case).  Unknown tokens are
+        reported clearly.
+        """
         await self.chain_client.init_client()
+
         try:
 
             denoms: Dict[str, int] = await fetch_decimal_denoms(
                 self.chain_client.network_type
             )
-            bank_balances = await self.chain_client.client.fetch_bank_balances(
+
+            lookup: dict[str, tuple[str, int]] = {}
+            for raw, dec in denoms.items():
+                lookup[raw.lower()] = (raw, dec)  # raw itself
+                # derive a symbol if possible
+                if "/" not in raw:
+                    # simple native denom, e.g. 'inj'
+                    lookup[raw.lower()] = (raw, dec)
+                else:
+                    # factory / peggy: take last segment after '/', then after ':'
+                    symbol = raw.split("/")[-1].split(":")[-1]
+                    lookup[symbol.lower()] = (raw, dec)
+
+            bank = await self.chain_client.client.fetch_bank_balances(
                 address=self.chain_client.address.to_acc_bech32()
             )
-            bank_balances = bank_balances["balances"]
+            balances_on_chain = bank["balances"]  # [{denom, amount}, …]
 
-            # hash the bank balances as a kv pair
-            human_readable_balances = {}
-            for token in bank_balances:
-                if token["denom"] in denoms:
-                    human_readable_balances[token["denom"]] = str(
-                        int(token["amount"]) / 10 ** int(denoms[token["denom"]])
-                    )
-            # check if denom is an arg fron the openai func calling
-            filtered_balances = dict()
-            if denom_list != None:
-                # filter the balances
-                # TODO: replace with lambda func
-                for denom in denom_list:
-                    if denom in human_readable_balances:
-                        filtered_balances[denom] = human_readable_balances[denom]
+            human: dict[str, str] = {}
+            for token in balances_on_chain:
+                raw = token["denom"]
+                if raw in denoms:
+                    dec = denoms[raw]
+                    human[raw] = str(Decimal(token["amount"]) / Decimal(10**dec))
+
+            if denom_list is not None:
+                result: dict[str, str] = {}
+                for name in denom_list:
+                    key = name.lower()
+                    if key in lookup:
+                        raw, _ = lookup[key]
+                        result[name] = human.get(raw, "0")
                     else:
-                        filtered_balances[denom] = "The token is not on mainnet!"
-                return {"success": True, "result": filtered_balances}
+                        result[name] = "Token not recognised on this network."
+                return {"success": True, "result": result}
 
-            else:
-                return {"success": True, "result": human_readable_balances}
+            return {"success": True, "result": human}
+
         except Exception as e:
             return {"success": False, "error": detailed_exception_info(e)}
 
@@ -137,12 +156,17 @@ class InjectiveBank(InjectiveBase):
             return {"success": False, "error": detailed_exception_info(e)}
 
     async def query_balance_of_denom(self, denom: str) -> Dict:
+        print(f"query_balance_of_denom {denom}")
+
         await self.chain_client.init_client()
 
         try:
 
-            metadata = await self.chain_client.client.fetch_denom_metadata(denom)
-            decimals = metadata["metadata"]["decimals"]
+            if denom.lower() != "inj":
+                metadata = await self.chain_client.client.fetch_denom_metadata(denom)
+                decimals = metadata["metadata"]["decimals"]
+            else:
+                decimals = 18
 
             bank_balance = await self.chain_client.client.fetch_bank_balance(
                 address=self.chain_client.address.to_acc_bech32(), denom=denom
@@ -150,7 +174,12 @@ class InjectiveBank(InjectiveBase):
 
             balance = bank_balance["balance"]["amount"]
 
-            formatted = int(balance) / 10 ** int(decimals)
+            print(f"balance {balance}")
+            print(f"decimals {decimals}")
+
+            formatted = Decimal(balance) / Decimal(10**decimals)
+
+            print(f"formatted {formatted}")
 
             return {"success": True, "result": str(formatted)}
 

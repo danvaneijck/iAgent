@@ -8,6 +8,8 @@ from pathlib import Path
 class InjectiveFunctionMapper:
     # Map function names to (client_type, method_name)
     FUNCTION_MAP: Dict[str, Tuple[str, str]] = {
+        # account functions
+        "fetch_tx": ("account", "fetch_tx"),
         # Trader functions
         "place_derivative_limit_order": ("trader", "place_derivative_limit_order"),
         "place_derivative_market_order": ("trader", "place_derivative_market_order"),

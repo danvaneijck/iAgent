@@ -21,5 +21,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the agent script
 COPY agent_server.py .
 
+ENV PYTHONUNBUFFERED=1          
 # Run the agent script
 CMD ["python", "agent_server.py", "--port", "5000"]
