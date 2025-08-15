@@ -140,7 +140,6 @@ async def get_market_id(ticker_symbol: str, network_type: str = "mainnet"):
     """
     # Normalize the ticker symbol to match the API format
     normalized_ticker = normalize_ticker(ticker_symbol)
-    print(f"Fetching market ID for ticker: {normalized_ticker} on {network_type}")
 
     is_spot = "PERP" not in normalized_ticker
     request_url = ""

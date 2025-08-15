@@ -491,6 +491,48 @@
             }
         },
         {
+            "name": "get_subaccount_position_in_market",
+            "description": "Get trader's positions in specified markets",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "market_id": {
+                        "type": "string",
+                        "description": "Spot market ID"
+                    },
+                    "subaccount_idx": {
+                        "type": "integer",
+                        "description": "Subaccount index"
+                    }
+                },
+                "required": [
+                    "market_id",
+                    "subaccount_idx"
+                ]
+            }
+        },
+        {
+            "name": "close_derivative_position_market",
+            "description": "Close an entire derivative position at the current market price",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "market_id": {
+                        "type": "string",
+                        "description": "Spot market ID"
+                    },
+                    "subaccount_idx": {
+                        "type": "integer",
+                        "description": "Subaccount index"
+                    }
+                },
+                "required": [
+                    "market_id",
+                    "subaccount_idx"
+                ]
+            }
+        },
+        {
             "name": "launch_instant_spot_market",
             "description": "Launch a new spot market",
             "parameters": {

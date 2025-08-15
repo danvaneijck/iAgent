@@ -4,6 +4,7 @@ import re
 import base64
 import requests
 from injective_functions.utils.indexer_requests import get_market_id
+from decimal import Decimal
 
 
 def base64convert(s):
@@ -90,3 +91,21 @@ def detailed_exception_info(e) -> Dict:
             },
         },
     }
+
+
+def to_human_readable(value: str, decimals: int) -> Decimal:
+    """
+    Converts a large integer string from the Injective API into a human-readable Decimal.
+
+    :param value: The large integer string (e.g., '200000000000000000').
+    :param decimals: The number of decimal places for this value (e.g., 18).
+    :return: A Decimal object representing the human-readable value.
+    """
+    if not isinstance(value, str) or not value.isdigit():
+        raise ValueError("Input value must be a string of digits.")
+
+    # Create a Decimal from the string value
+    raw_decimal = Decimal(value)
+
+    # Divide by 10 to the power of the number of decimals
+    return raw_decimal / (Decimal(10) ** decimals)

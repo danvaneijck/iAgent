@@ -17,6 +17,10 @@ class InjectiveFunctionMapper:
         "place_spot_market_order": ("trader", "place_spot_market_order"),
         "cancel_derivative_limit_order": ("trader", "cancel_derivative_limit_order"),
         "cancel_spot_limit_order": ("trader", "cancel_spot_limit_order"),
+        "close_derivative_position_market": (
+            "trader",
+            "close_derivative_position_market",
+        ),
         # Exchange functions
         "get_subaccount_deposits": ("exchange", "get_subaccount_deposits"),
         "get_aggregate_market_volumes": ("exchange", "get_aggregate_market_volumes"),
@@ -39,6 +43,10 @@ class InjectiveFunctionMapper:
             "trader_derivative_orders_by_hash",
         ),
         "trader_spot_orders": ("exchange", "trader_spot_orders"),
+        "get_subaccount_position_in_market": (
+            "exchange",
+            "get_subaccount_position_in_market",
+        ),
         "trader_spot_orders_by_hash": ("exchange", "trader_spot_orders_by_hash"),
         # Bank functions
         "query_balances": ("bank", "query_balances"),

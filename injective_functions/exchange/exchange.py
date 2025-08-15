@@ -1,10 +1,14 @@
 from decimal import Decimal
 from injective_functions.base import InjectiveBase
-from injective_functions.utils.indexer_requests import fetch_decimal_denoms
+from injective_functions.utils.indexer_requests import (
+    fetch_decimal_denoms,
+    normalize_ticker,
+)
 from injective_functions.utils.helpers import (
     impute_market_id,
     impute_market_ids,
     detailed_exception_info,
+    to_human_readable,
 )
 from pyinjective.client.model.pagination import PaginationOption
 
@@ -125,12 +129,41 @@ class InjectiveExchange(InjectiveBase):
 
     async def get_mid_price_and_tob_derivatives_market(self, market_id: str) -> Dict:
         try:
-            market_id = await impute_market_id(market_id)
+            # 1. Fetch market info to get the decimal precision
+            market_info_response = await self.getMarketInfo(market_id)
+            if not market_info_response.get("success"):
+                raise ValueError(
+                    f"Failed to fetch market info: {market_info_response.get('error')}"
+                )
 
-            res = await self.chain_client.client.fetch_derivative_mid_price_and_tob(
-                market_id=market_id,
+            # Extract the quote decimals needed for price conversion
+            market_data = market_info_response["result"]["market"]["market"]
+            quote_decimals = market_data["quoteDecimals"]
+
+            # Impute the market ID for the next call
+            imputed_market_id = await impute_market_id(market_id)
+
+            # 2. Fetch the raw, large-integer price data
+            raw_price_data = (
+                await self.chain_client.client.fetch_derivative_mid_price_and_tob(
+                    market_id=imputed_market_id,
+                )
             )
-            return {"success": True, "result": res}
+            print(f"Raw price data: {raw_price_data}")
+
+            # 3. Convert each price value using the quote_decimals
+            human_readable_prices = {}
+            for key, value in raw_price_data.items():
+                # All values in this response are prices, so they all use quote_decimals
+                human_readable_prices[key] = to_human_readable(value, quote_decimals)
+
+            # Optionally, convert to strings for clean JSON output
+            human_readable_prices_str = {
+                k: str(v) for k, v in human_readable_prices.items()
+            }
+
+            return {"success": True, "result": human_readable_prices_str}
+
         except Exception as e:
             return {"success": False, "error": detailed_exception_info(e)}
 
@@ -234,25 +267,130 @@ class InjectiveExchange(InjectiveBase):
         except Exception as e:
             return {"success": False, "error": detailed_exception_info(e)}
 
-    async def get_subaccount_positions_in_markets(self, market_ids: List[str]) -> Dict:
+    async def getMarketInfo(self, market_id: str) -> Dict:
         try:
-            market_ids = await impute_market_ids(market_ids)
+            ticker = normalize_ticker(market_id)
+            market_id = await impute_market_id(market_id)
+            isPerp = "PERP" in ticker
 
-            subaccount_id = self.chain_client.address.get_subaccount_id(subaccount_id)
-            positions = await self.chain_client.client.fetch_chain_subaccount_positions(
-                subaccount_id=subaccount_id,
-            )["state"]
-            position_map = {}
-            for position in positions:
-                position_map[position["market_id"]] = position["position"]
+            if isPerp:
+                market_info = (
+                    await self.chain_client.client.fetch_chain_derivative_market(
+                        market_id=market_id
+                    )
+                )
+            else:
+                market_info = await self.chain_client.client.fetch_chain_spot_market(
+                    market_id=market_id
+                )
 
-            filtered_positions = dict()
-            if market_ids != None:
-                for market_id in market_ids:
-                    filtered_positions["market_id"] = position_map[market_id]
-                return {"success": True, "result": position_map}
-            return {"success": True, "result": position_map}
+            return {"success": True, "result": market_info}
         except Exception as e:
+            return {"success": False, "error": detailed_exception_info(e)}
+
+    async def get_subaccount_position_in_market(
+        self,
+        market_id: str,
+        subaccount_idx: int,
+    ) -> Dict:
+        try:
+            print(f"Fetching position and PnL for market: {market_id}")
+
+            # 1. Get market info to find decimals AND the current mark price
+            market_info_response = await self.getMarketInfo(market_id)
+            if not market_info_response.get("success"):
+                raise ValueError(
+                    f"Failed to fetch market info: {market_info_response.get('error')}"
+                )
+
+            print(f"Market info: {market_info_response}")
+            market_result = market_info_response["result"]
+            market_data = market_result["market"]["market"]
+
+            # Extract necessary data for conversions and calculations
+            quote_decimals = market_data["quoteDecimals"]
+            base_decimals = 18  # Standard for base assets like INJ
+            raw_mark_price = market_result["market"]["markPrice"]
+
+            print(f"Raw mark price: {raw_mark_price}, quote decimals: {quote_decimals}")
+
+            # Impute market_id for the next call
+            imputed_market_id = await impute_market_id(market_id)
+            subaccount_id = self.chain_client.address.get_subaccount_id(subaccount_idx)
+            print(f"Subaccount ID: {subaccount_id}, market ID: {imputed_market_id}")
+
+            # 2. Get the raw position data
+            positions_response = await self.chain_client.client.fetch_chain_subaccount_effective_position_in_market(
+                subaccount_id=subaccount_id, market_id=imputed_market_id
+            )
+            print(f"API Response: {positions_response}")
+
+            position_state = positions_response.get("state")
+
+            if position_state:
+                # 3. Convert all raw values to human-readable Decimals
+                quantity = to_human_readable(position_state["quantity"], base_decimals)
+                entry_price = to_human_readable(
+                    position_state["entryPrice"], quote_decimals + base_decimals
+                )
+                margin = to_human_readable(
+                    position_state["effectiveMargin"], quote_decimals + base_decimals
+                )
+                current_price = to_human_readable(
+                    raw_mark_price, quote_decimals + base_decimals
+                )
+
+                print(
+                    f"Calculating PnL: Current={current_price}, Entry={entry_price}, Qty={quantity}, Margin={margin}"
+                )
+
+                # 4. Calculate PnL based on position direction
+                pnl_quote = Decimal("0")
+                if position_state["isLong"]:
+                    pnl_quote = (current_price - entry_price) * quantity
+                else:  # Position is Short
+                    pnl_quote = (entry_price - current_price) * quantity
+
+                # 5. Calculate Percentage PnL
+                pnl_percent = Decimal("0")
+                if margin > 0:
+                    pnl_percent = (pnl_quote / margin) * 100
+
+                # 6. Build the final, comprehensive result object
+                human_readable_result = {
+                    "ticker": market_data["ticker"],
+                    "isLong": position_state["isLong"],
+                    "quantity": quantity,
+                    "entryPrice": entry_price,
+                    "effectiveMargin": margin,
+                    "currentMarkPrice": current_price,
+                    "pnl_quote": pnl_quote,  # PnL in the quote asset (e.g., USDT)
+                    "pnl_percent": pnl_percent,  # PnL as a percentage of margin
+                }
+
+                print(f"Position details: {human_readable_result}")
+
+                # Optionally convert to strings for clean JSON output before returning
+                result_str = {
+                    k: f"{v:.4f}" if isinstance(v, Decimal) else v
+                    for k, v in human_readable_result.items()
+                }
+
+                return {"success": True, "result": result_str}
+            else:
+                print(
+                    f"No position found for subaccount {subaccount_id} in market {imputed_market_id}."
+                )
+                return {
+                    "success": True,
+                    "result": "No open position found in this market.",
+                }
+
+        except Exception as e:
+            print(
+                f"An error occurred in get_subaccount_position_in_market: {e}",
+                exc_info=True,
+            )
             return {"success": False, "error": detailed_exception_info(e)}
 
     async def launch_instant_spot_market(
