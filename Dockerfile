@@ -15,7 +15,6 @@ WORKDIR /app
 # Copy the requirements and install them
 COPY requirements.txt .
 COPY injective_functions /app/injective_functions
-COPY .env /app/.env
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the agent script
