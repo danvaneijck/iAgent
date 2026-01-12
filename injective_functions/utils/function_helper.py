@@ -25,7 +25,7 @@ class InjectiveFunctionMapper:
         "get_subaccount_deposits": ("exchange", "get_subaccount_deposits"),
         "get_aggregate_market_volumes": ("exchange", "get_aggregate_market_volumes"),
         "get_aggregate_account_volumes": ("exchange", "get_aggregate_account_volumes"),
-        "get_subaccount_orders": ("exchange", "get_subaccount_orders"),
+        "get_subaccount_orders_spot": ("exchange", "get_subaccount_orders_spot"),
         "get_historical_orders": ("exchange", "get_historical_orders"),
         "get_mid_price_and_tob_derivatives_market": (
             "exchange",

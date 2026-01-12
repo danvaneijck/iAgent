@@ -95,7 +95,9 @@ class InjectiveExchange(InjectiveBase):
         except Exception as e:
             return {"success": False, "error": detailed_exception_info(e)}
 
-    async def get_subaccount_orders(self, subaccount_idx: int, market_id: str) -> Dict:
+    async def get_subaccount_orders_spot(
+        self, subaccount_idx: int, market_id: str
+    ) -> Dict:
         try:
             market_id = await impute_market_id(market_id)
 
@@ -210,11 +212,9 @@ class InjectiveExchange(InjectiveBase):
             market_id = await impute_market_id(market_id)
 
             subaccount_id = self.chain_client.address.get_subaccount_id(subaccount_idx)
-            orders = (
-                await self.chain_client.client.fetch_chain_trader_derivative_orders(
-                    market_id=market_id,
-                    subaccount_id=subaccount_id,
-                )
+            orders = await self.chain_client.client.fetch_chain_account_address_derivative_orders(
+                market_id=market_id,
+                account_address=self.chain_client.address.to_acc_bech32(),
             )
             return {"success": True, "result": orders}
         except Exception as e:

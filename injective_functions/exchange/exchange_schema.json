@@ -282,7 +282,7 @@
             }
         },
         {
-            "name": "get_subaccount_orders",
+            "name": "get_subaccount_orders_spot",
             "description": "Get orders for a specific subaccount in a market",
             "parameters": {
                 "type": "object",
